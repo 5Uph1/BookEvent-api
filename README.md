@@ -1,6 +1,6 @@
-# Eventure API
+# EventBooking API
 
-Backend REST API untuk aplikasi Eventure, sebuah platform Event Booking yang dibangun menggunakan Quarkus.
+Backend REST API untuk aplikasi EventBooking, sebuah platform Event Booking yang dibangun menggunakan Quarkus.
 
 ## Features
 
