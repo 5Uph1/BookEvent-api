@@ -266,17 +266,3 @@ Repository
       ↓
 Database
 ```
-
----
-
-## Future Improvements
-
-- Refresh Token
-- Email Verification
-- Upload Poster Event
-- Search & Filter Event
-- Dashboard Admin
-- Docker Support
-- Unit Testing
-
----
