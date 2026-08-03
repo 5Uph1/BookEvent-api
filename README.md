@@ -1,67 +1,282 @@
-# booking-event
+# Eventure API
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Backend REST API untuk aplikasi Eventure, sebuah platform Event Booking yang dibangun menggunakan Quarkus.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Features
 
-## Running the application in dev mode
+- Authentication menggunakan JWT
+- Authorization berdasarkan Role (ADMIN & USER)
+- CRUD Event
+- CRUD User
+- Booking Event
+- Melihat daftar peserta event
+- Melihat event yang telah didaftarkan
+- Pagination
+- PostgreSQL Database
 
-You can run your application in dev mode that enables live coding using:
+---
 
-```shell script
+## Tech Stack
+
+- Java 21
+- Quarkus
+- Hibernate ORM (Panache)
+- PostgreSQL
+- SmallRye JWT
+- BCrypt Password Hashing
+- Maven
+
+---
+
+## Project Structure
+
+```
+src
+├── main
+│   ├── java
+│   │   └── id.alif
+│   │       ├── controller
+│   │       ├── dto
+│   │       ├── entity
+│   │       ├── enums
+│   │       ├── repository
+│   │       └── services
+│   └── resources
+│       ├── application.properties
+│       └── keys
+└── test
+```
+
+---
+
+## Requirements
+
+Pastikan sudah menginstall
+
+- Java 21
+- Maven 3.9+
+- PostgreSQL 16+
+- Git
+
+---
+
+## Clone Repository
+
+```bash
+git clone https://github.com/USERNAME/eventure-api.git
+
+cd eventure-api
+```
+
+---
+
+## Database Setup
+
+Masuk ke PostgreSQL
+
+```sql
+CREATE DATABASE event_booking;
+```
+
+---
+
+## Configure Environment
+
+Edit file
+
+```
+src/main/resources/application.properties
+```
+
+contoh
+
+```properties
+quarkus.datasource.db-kind=postgresql
+quarkus.datasource.username=postgres
+quarkus.datasource.password=your_password
+quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/event_booking
+
+quarkus.hibernate-orm.database.generation=update
+```
+
+---
+
+## JWT Configuration
+
+Generate RSA Key
+
+```
+src/main/resources/keys
+├── privateKey.pem
+└── publicKey.pem
+```
+
+Kemudian tambahkan
+
+```properties
+mp.jwt.verify.publickey.location=keys/publicKey.pem
+smallrye.jwt.sign.key.location=keys/privateKey.pem
+mp.jwt.verify.issuer=event-booking-api
+```
+
+---
+
+## Install Dependencies
+
+```bash
+./mvnw clean install
+```
+
+atau
+
+```bash
+mvn clean install
+```
+
+---
+
+## Run Application
+
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+atau
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```bash
+mvn quarkus:dev
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+API akan berjalan di
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```
+http://localhost:8080
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+---
 
-## Creating a native executable
+## API Endpoints
 
-You can create a native executable using:
+### Authentication
 
-```shell script
-./mvnw package -Dnative
+| Method | Endpoint       |
+| ------ | -------------- |
+| POST   | /auth/register |
+| POST   | /auth/login    |
+
+---
+
+### User
+
+| Method | Endpoint    |
+| ------ | ----------- |
+| GET    | /users      |
+| GET    | /users/{id} |
+| PUT    | /users/{id} |
+| DELETE | /users/{id} |
+
+---
+
+### Event
+
+| Method | Endpoint     |
+| ------ | ------------ |
+| GET    | /events      |
+| GET    | /events/{id} |
+| POST   | /events      |
+| PUT    | /events/{id} |
+| DELETE | /events/{id} |
+
+---
+
+### Booking
+
+| Method | Endpoint            |
+| ------ | ------------------- |
+| POST   | /bookings           |
+| DELETE | /bookings/{id}      |
+| GET    | /bookings/my-events |
+
+---
+
+## Authentication
+
+Login
+
+```
+POST /auth/login
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Response
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+```json
+{
+  "status": 200,
+  "message": "Login success",
+  "data": {
+    "token": "..."
+  }
+}
 ```
 
-You can then execute your native executable with: `./target/booking-event-1.0.0-SNAPSHOT-runner`
+Gunakan token pada Header
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+```
+Authorization: Bearer <JWT_TOKEN>
+```
 
-## Related Guides
+---
 
-- REST ([guide](https://quarkus.io/guides/rest)): Build RESTful web services and APIs using Jakarta REST (formerly JAX-RS)
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
+## Database
 
-## Provided Code
+Entity
 
-### REST
+- User
+- Event
+- Booking
 
-Easily start your REST Web Services
+Relationship
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+```
+User
+  |
+  | 1
+  |
+  | *
+Booking
+  |
+  | *
+  |
+  | 1
+Event
+```
+
+---
+
+## Development
+
+Project menggunakan arsitektur sederhana
+
+```
+Controller
+      ↓
+Service
+      ↓
+Repository
+      ↓
+Database
+```
+
+---
+
+## Future Improvements
+
+- Refresh Token
+- Email Verification
+- Upload Poster Event
+- Search & Filter Event
+- Dashboard Admin
+- Docker Support
+- Unit Testing
+
+---
